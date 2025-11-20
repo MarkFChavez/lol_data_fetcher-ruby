@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lol_data_fetcher (0.2.0)
+    lol_data_fetcher (0.3.0)
       faraday (~> 2.0)
       faraday-retry (~> 2.0)
       thor (~> 1.3)
