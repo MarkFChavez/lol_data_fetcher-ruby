@@ -5,19 +5,27 @@ module LolDataFetcher
     # Resource for fetching champion skin data
     class Skins < Base
       # Fetch skins for a specific champion
-      # @param champion_name [String] Champion name (e.g., "Ahri")
+      # Supports case-insensitive search (e.g., "ahri", "AHRI", "Ahri")
+      # @param champion_name [String] Champion name (case-insensitive)
       # @return [Array<Hash>] Array of skin data with image URLs
       def for_champion(champion_name)
-        champion_data = get(cdn_path("champion/#{champion_name}"))
-        skins = champion_data.dig("data", champion_name, "skins") || []
+        # Use the champions resource to get the data with normalized name
+        champion_data = client.champions.find(champion_name)
+
+        # The find method returns data with the normalized name as key
+        # We need to extract that key from the data
+        normalized_name = champion_data.dig("data")&.keys&.first
+        return [] unless normalized_name
+
+        skins = champion_data.dig("data", normalized_name, "skins") || []
 
         skins.map do |skin|
           {
             "id" => skin["id"],
             "num" => skin["num"],
             "name" => skin["name"],
-            "splash_url" => splash_url(champion_name, skin["num"]),
-            "loading_url" => loading_url(champion_name, skin["num"]),
+            "splash_url" => splash_url(normalized_name, skin["num"]),
+            "loading_url" => loading_url(normalized_name, skin["num"]),
             "chromas" => skin["chromas"] || false
           }
         end

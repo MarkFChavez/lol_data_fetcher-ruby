@@ -56,6 +56,34 @@ RSpec.describe LolDataFetcher::Resources::Champions do
       expect(passive["name"]).to be_a(String)
       expect(passive["description"]).to be_a(String)
     end
+
+    it "supports case-insensitive search with lowercase" do
+      result = champions.find("ahri")
+
+      expect(result).to be_a(Hash)
+      expect(result["data"]).to have_key("Ahri")
+      expect(result["data"]["Ahri"]["name"]).to eq("Ahri")
+    end
+
+    it "supports case-insensitive search with uppercase" do
+      result = champions.find("DRAVEN")
+
+      expect(result).to be_a(Hash)
+      expect(result["data"]).to have_key("Draven")
+      expect(result["data"]["Draven"]["name"]).to eq("Draven")
+    end
+
+    it "supports case-insensitive search with mixed case" do
+      result = champions.find("mAsTeRyI")
+
+      expect(result).to be_a(Hash)
+      expect(result["data"]).to have_key("MasterYi")
+      expect(result["data"]["MasterYi"]["name"]).to eq("Master Yi")
+    end
+
+    it "raises NotFoundError for non-existent champion" do
+      expect { champions.find("NonExistentChampion") }.to raise_error(LolDataFetcher::NotFoundError)
+    end
   end
 
   describe "#passive", :vcr do
@@ -72,6 +100,13 @@ RSpec.describe LolDataFetcher::Resources::Champions do
 
       expect(passive["name"]).to eq("League of Draven")
       expect(passive["description"]).to include("Adoration")
+    end
+
+    it "supports case-insensitive search" do
+      passive = champions.passive("draven")
+
+      expect(passive).to be_a(Hash)
+      expect(passive["name"]).to eq("League of Draven")
     end
   end
 

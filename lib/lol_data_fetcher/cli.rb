@@ -51,7 +51,10 @@ module LolDataFetcher
       client = create_client
       data = client.champions.find(name)
 
-      champion_data = data.dig("data", name)
+      # Extract the normalized champion name from the response
+      normalized_name = data.dig("data")&.keys&.first
+      champion_data = data.dig("data", normalized_name)
+
       unless champion_data
         error("Champion '#{name}' not found")
         return
@@ -130,7 +133,12 @@ module LolDataFetcher
       client = create_client
       skins = client.skins.for_champion(champion_name)
 
-      puts "\n#{champion_name}'s Skins:"
+      # Get the correctly-cased champion name from the first skin's URL if available
+      # Or fetch it directly from the champions resource
+      champion_data = client.champions.find(champion_name)
+      normalized_name = champion_data.dig("data")&.keys&.first || champion_name
+
+      puts "\n#{normalized_name}'s Skins:"
       puts "=" * 50
 
       skins.each do |skin|

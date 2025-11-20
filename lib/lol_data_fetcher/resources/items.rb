@@ -23,12 +23,20 @@ module LolDataFetcher
         all.dig("data")&.keys || []
       end
 
-      # Search items by name
-      # @param query [String] Search query
+      # Search items by name (case-insensitive)
+      # @param query [String] Search query (case-insensitive)
       # @return [Array<Hash>] Array of matching items
       def search(query)
         items = all.dig("data") || {}
         items.select { |_id, item| item["name"]&.downcase&.include?(query.downcase) }.values
+      end
+
+      # Find item by exact name match (case-insensitive)
+      # @param name [String] Item name (case-insensitive)
+      # @return [Hash, nil] Item data or nil if not found
+      def find_by_name(name)
+        items = all.dig("data") || {}
+        items.find { |_id, item| item["name"]&.downcase == name.downcase }&.last
       end
     end
   end

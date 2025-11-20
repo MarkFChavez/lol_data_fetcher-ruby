@@ -7,6 +7,7 @@ A Ruby client for the League of Legends Data Dragon API. Fetch champions, items,
 - Fetch all champions with detailed information including skills/spells
 - Get all items and search by name
 - Retrieve champion skins with image URLs
+- **Case-insensitive search** for champions, items, and skins
 - Support for multiple game versions and languages
 - Command-line interface (CLI) for quick data access
 - Comprehensive test coverage with RSpec
@@ -67,12 +68,17 @@ ahri_data = ahri["data"]["Ahri"]
 puts ahri_data["name"]  # => "Ahri"
 puts ahri_data["title"] # => "the Nine-Tailed Fox"
 
+# Case-insensitive search (works with any casing!)
+client.champions.find("ahri")     # => Works!
+client.champions.find("AHRI")     # => Works!
+client.champions.find("DrAvEn")   # => Works!
+
 # Access champion's passive ability
 passive = ahri_data["passive"]
 puts "#{passive['name']}: #{passive['description']}"
 
-# Or use the helper method
-passive = client.champions.passive("Ahri")
+# Or use the helper method (also case-insensitive)
+passive = client.champions.passive("ahri")
 puts "#{passive['name']}: #{passive['description']}"
 
 # Access champion spells/skills
@@ -101,8 +107,12 @@ end
 boots = client.items.find("1001")
 puts boots["name"] # => "Boots"
 
-# Search items by name
-swords = client.items.search("sword")
+# Find item by name (case-insensitive exact match)
+boots = client.items.find_by_name("boots")  # Works with any casing
+puts boots["name"] # => "Boots"
+
+# Search items by name (case-insensitive partial match)
+swords = client.items.search("SWORD")  # Case doesn't matter
 swords.each do |item|
   puts item["name"]
 end
@@ -114,8 +124,8 @@ ids = client.items.list_ids
 #### Fetching Skins
 
 ```ruby
-# Get all skins for a specific champion
-skins = client.skins.for_champion("Ahri")
+# Get all skins for a specific champion (case-insensitive)
+skins = client.skins.for_champion("ahri")  # Works with any casing
 skins.each do |skin|
   puts skin["name"]
   puts "Splash: #{skin['splash_url']}"
@@ -272,27 +282,34 @@ client = LolDataFetcher::Client.new(version: "15.23.1", language: "en_US")
 
 ### Champions Resource
 
+All champion name searches are **case-insensitive**.
+
 ```ruby
 client.champions.all                  # Get all champions (overview)
-client.champions.find("Ahri")         # Get detailed champion data
-client.champions.passive("Ahri")      # Get champion's passive ability
+client.champions.find("ahri")         # Get detailed champion data (case-insensitive)
+client.champions.passive("AHRI")      # Get champion's passive ability (case-insensitive)
 client.champions.list_names           # List all champion names
 client.champions.find_by_id("103")    # Find champion by ID
 ```
 
 ### Items Resource
 
+Item searches are **case-insensitive**.
+
 ```ruby
 client.items.all                      # Get all items
 client.items.find("1001")             # Find item by ID
+client.items.find_by_name("boots")    # Find item by name (case-insensitive)
 client.items.list_ids                 # List all item IDs
-client.items.search("sword")          # Search items by name
+client.items.search("SWORD")          # Search items by name (case-insensitive)
 ```
 
 ### Skins Resource
 
+Champion name searches are **case-insensitive**.
+
 ```ruby
-client.skins.for_champion("Ahri")     # Get skins for a champion
+client.skins.for_champion("ahri")     # Get skins for a champion (case-insensitive)
 ```
 
 ### Versions Resource

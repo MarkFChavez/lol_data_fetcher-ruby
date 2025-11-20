@@ -73,4 +73,27 @@ RSpec.describe LolDataFetcher::Resources::Items do
       expect(result_lower).to eq(result_upper)
     end
   end
+
+  describe "#find_by_name", :vcr do
+    it "finds item by exact name match" do
+      result = items.find_by_name("Boots")
+
+      expect(result).to be_a(Hash)
+      expect(result["name"]).to eq("Boots")
+    end
+
+    it "is case insensitive" do
+      result_lower = items.find_by_name("boots")
+      result_upper = items.find_by_name("BOOTS")
+
+      expect(result_lower).to eq(result_upper)
+      expect(result_lower["name"]).to eq("Boots")
+    end
+
+    it "returns nil for non-existent item" do
+      result = items.find_by_name("NonExistentItem")
+
+      expect(result).to be_nil
+    end
+  end
 end

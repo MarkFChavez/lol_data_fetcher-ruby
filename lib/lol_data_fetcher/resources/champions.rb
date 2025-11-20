@@ -11,17 +11,23 @@ module LolDataFetcher
       end
 
       # Fetch detailed data for a specific champion including skills
-      # @param name [String] Champion name (e.g., "Ahri", "MasterYi")
+      # Supports case-insensitive search (e.g., "ahri", "AHRI", "Ahri")
+      # @param name [String] Champion name (case-insensitive)
       # @return [Hash] Detailed champion data including spells/skills
       def find(name)
-        get(cdn_path("champion/#{name}"))
+        normalized_name = normalize_name(name)
+        data = get(cdn_path("champion/#{normalized_name}"))
+        # Return data with the normalized name key
+        data
       end
 
       # Get passive ability for a specific champion
-      # @param name [String] Champion name (e.g., "Ahri", "MasterYi")
+      # Supports case-insensitive search
+      # @param name [String] Champion name (case-insensitive)
       # @return [Hash, nil] Passive ability data or nil if not found
       def passive(name)
-        find(name).dig("data", name, "passive")
+        normalized_name = normalize_name(name)
+        find(normalized_name).dig("data", normalized_name, "passive")
       end
 
       # List all champion names
@@ -35,6 +41,33 @@ module LolDataFetcher
       # @return [Hash, nil] Champion data or nil if not found
       def find_by_id(id)
         all.dig("data")&.find { |_key, champ| champ["key"] == id.to_s }&.last
+      end
+
+      private
+
+      # Normalize champion name to match Data Dragon API casing
+      # Performs case-insensitive lookup to find the correct champion name
+      # @param name [String] Champion name in any casing
+      # @return [String] Properly-cased champion name for API
+      # @raise [NotFoundError] If champion is not found
+      def normalize_name(name)
+        return name if name.nil? || name.empty?
+
+        # Get all champion names from the API
+        champions_data = all.dig("data")
+        return name unless champions_data
+
+        # Find the champion with case-insensitive matching
+        normalized = champions_data.keys.find do |champion_name|
+          champion_name.downcase == name.downcase
+        end
+
+        # If not found, raise an error
+        unless normalized
+          raise NotFoundError, "Champion '#{name}' not found. Check spelling and try again."
+        end
+
+        normalized
       end
     end
   end
