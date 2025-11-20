@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "lol_data_fetcher"
+require "lol_data_fetcher/cli"
+
+LolDataFetcher::CLI.start(ARGV)
