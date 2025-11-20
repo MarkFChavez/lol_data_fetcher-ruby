@@ -67,6 +67,14 @@ ahri_data = ahri["data"]["Ahri"]
 puts ahri_data["name"]  # => "Ahri"
 puts ahri_data["title"] # => "the Nine-Tailed Fox"
 
+# Access champion's passive ability
+passive = ahri_data["passive"]
+puts "#{passive['name']}: #{passive['description']}"
+
+# Or use the helper method
+passive = client.champions.passive("Ahri")
+puts "#{passive['name']}: #{passive['description']}"
+
 # Access champion spells/skills
 ahri_data["spells"].each do |spell|
   puts "#{spell['name']}: #{spell['description']}"
@@ -267,6 +275,7 @@ client = LolDataFetcher::Client.new(version: "15.23.1", language: "en_US")
 ```ruby
 client.champions.all                  # Get all champions (overview)
 client.champions.find("Ahri")         # Get detailed champion data
+client.champions.passive("Ahri")      # Get champion's passive ability
 client.champions.list_names           # List all champion names
 client.champions.find_by_id("103")    # Find champion by ID
 ```

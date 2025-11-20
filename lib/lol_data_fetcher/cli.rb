@@ -62,12 +62,22 @@ module LolDataFetcher
       puts "\nLore:"
       puts word_wrap(champion_data["lore"])
 
-      if options[:skills] && champion_data["spells"]
-        puts "\n#{champion_data['name']}'s Skills:"
-        puts "-" * 50
-        champion_data["spells"].each_with_index do |spell, idx|
-          puts "\n#{idx + 1}. #{spell['name']}"
-          puts "   #{word_wrap(strip_html(spell['description']), 3)}"
+      if options[:skills]
+        # Display passive ability
+        if champion_data["passive"]
+          passive = champion_data["passive"]
+          puts "\nPassive: #{passive['name']}"
+          puts "   #{word_wrap(strip_html(passive['description']), 3)}"
+        end
+
+        # Display active spells/abilities
+        if champion_data["spells"]
+          puts "\n#{champion_data['name']}'s Skills:"
+          puts "-" * 50
+          champion_data["spells"].each_with_index do |spell, idx|
+            puts "\n#{idx + 1}. #{spell['name']}"
+            puts "   #{word_wrap(strip_html(spell['description']), 3)}"
+          end
         end
       end
 

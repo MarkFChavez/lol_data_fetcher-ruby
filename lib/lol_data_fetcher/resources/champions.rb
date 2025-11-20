@@ -17,6 +17,13 @@ module LolDataFetcher
         get(cdn_path("champion/#{name}"))
       end
 
+      # Get passive ability for a specific champion
+      # @param name [String] Champion name (e.g., "Ahri", "MasterYi")
+      # @return [Hash, nil] Passive ability data or nil if not found
+      def passive(name)
+        find(name).dig("data", name, "passive")
+      end
+
       # List all champion names
       # @return [Array<String>] Array of champion names
       def list_names
