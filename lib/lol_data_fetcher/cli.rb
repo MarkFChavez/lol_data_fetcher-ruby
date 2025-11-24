@@ -125,6 +125,32 @@ module LolDataFetcher
       error("Failed to fetch items: #{e.message}")
     end
 
+    desc "summoner_spells", "List all summoner spells"
+    method_option :version, aliases: "-v", desc: "Game version to use"
+    method_option :language, aliases: "-l", default: "en_US", desc: "Language code"
+    method_option :search, aliases: "-s", desc: "Search summoner spells by name"
+    method_option :limit, aliases: "-n", type: :numeric, desc: "Limit number of results"
+    def summoner_spells
+      client = create_client
+
+      if options[:search]
+        spells_list = client.summoner_spells.search(options[:search])
+      else
+        data = client.summoner_spells.all
+        spells_list = data["data"].values
+      end
+
+      spells_list = spells_list.first(options[:limit]) if options[:limit]
+
+      spells_list.each do |spell|
+        puts "#{spell['name'].ljust(20)} - #{strip_html(spell['description'])}"
+      end
+
+      puts "\nTotal: #{spells_list.length} summoner spells"
+    rescue LolDataFetcher::Error => e
+      error("Failed to fetch summoner spells: #{e.message}")
+    end
+
     desc "skins CHAMPION", "List all skins for a champion"
     method_option :version, aliases: "-v", desc: "Game version to use"
     method_option :language, aliases: "-l", default: "en_US", desc: "Language code"

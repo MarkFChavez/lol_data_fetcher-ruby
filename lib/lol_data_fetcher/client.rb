@@ -36,6 +36,12 @@ module LolDataFetcher
       @skins ||= Resources::Skins.new(self)
     end
 
+    # Access the summoner_spells resource
+    # @return [LolDataFetcher::Resources::SummonerSpells]
+    def summoner_spells
+      @summoner_spells ||= Resources::SummonerSpells.new(self)
+    end
+
     # Access the versions resource
     # @return [LolDataFetcher::Resources::Versions]
     def versions
@@ -70,3 +76,4 @@ require_relative "resources/versions"
 require_relative "resources/champions"
 require_relative "resources/items"
 require_relative "resources/skins"
+require_relative "resources/summoner_spells"
